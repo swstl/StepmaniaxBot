@@ -1,5 +1,4 @@
-import discord, { EmbedBuilder } from 'discord.js';
-const { MessageEmbed } = discord;
+import { EmbedBuilder } from 'discord.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -36,10 +35,11 @@ export const scoreFeedEmbed = (scorefeed) => {
 
     switch (scorefeed.difficulty) {
         case 'Beginner':
-            embedColor = '#00ff00';
+        case 'Normal':
+            embedColor = '#ffff00';
             break;
         case 'Easy':
-            embedColor = '#00ffff';
+            embedColor = '#00ff00';
             break;
         case 'hard':
             embedColor = '#ff0000';
@@ -48,10 +48,10 @@ export const scoreFeedEmbed = (scorefeed) => {
             embedColor = '#ff00ff';
             break;
         case 'dual':
-            embedColor = '#ffff00';
+            embedColor = '#0000ff';
             break;
         case 'full':
-            embedColor = '#0000ff';
+            embedColor = '#00ffff';
             break;
     }
 
@@ -77,3 +77,40 @@ export const scoreFeedEmbed = (scorefeed) => {
         //             { name: 'Early', value: scorefeed.early.toString(), inline: true },
         //             { name: 'Miss', value: scorefeed.misses.toString(), inline: true })
 }
+
+
+export const listEmbed = (username, difficulty, results) => {
+    if (!results || results.length === 0) {
+        return new EmbedBuilder()
+            .setColor('#FF0000')
+            .setTitle('No Results')
+            .setDescription(`No scores found for ${username} on ${difficulty} difficulty.`);
+    }
+
+    // Color based on difficulty
+    const difficultyColors = {
+        wild: '#ff00ff',
+        hard: '#ff0000',
+        normal: '#ffff00',
+        easy: '#00ff00',
+        full: '#00ffff',
+        dual: '#0000ff'
+    };
+
+    const embed = new EmbedBuilder()
+        .setColor(difficultyColors[difficulty] || '#ffffff')
+        .setTitle(`Worst Best Scores - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}`)
+        .setDescription(`Showing lowest personal bests for **${username}**`)
+        .setTimestamp();
+
+    // Add fields for each result (max 25 fields in Discord)
+    results.forEach(result => {
+        embed.addFields({
+            name: `Difficulty ${result.difficulty}`,
+            value: `${result.title}\nScore: **${result.score}**`,
+            inline: true
+        });
+    });
+
+    return embed;
+};

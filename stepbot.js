@@ -70,12 +70,11 @@ client.on('guildCreate', guild => {
 // when the client is ready
 client.on("ready", async () => {
     console.log(commands);
-    console.log("Ready!");
     for (const c of commands) {
         const command = await client.application?.commands.create(c);
         console.log(`Registered slash command: ${command.name}`);
     }
-    
+
     // load the correct channels
     relogChannels(client);
 

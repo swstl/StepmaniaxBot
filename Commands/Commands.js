@@ -1,4 +1,5 @@
 import register from '../config.js';
+import listEmbed from './Embeds.js';
 
 /** command types:
  * 1: SUB_COMMAND
@@ -170,25 +171,14 @@ export async function handleCommand(command) {
             break;
         case 'list':
             const username = command.options.getString('user');
-            const difficulty = command.options.getString('difficulty') || 'wild'; // default to wild
+            const difficulty = command.options.getString('difficulty') || 'wild';
 
-            await command.deferReply(); // Show "thinking..." since this may take a while
+            await command.deferReply();
 
             try {
                 const results = await getWorstPBScores(username, difficulty);
-
-                if (results.length === 0) {
-                    await command.editReply(`No scores found for ${username} on ${difficulty} difficulty.`);
-                    return;
-                }
-
-                // Format results
-                let message = `**Worst PB scores for ${username} (${difficulty}):**\n\n`;
-                results.forEach(result => {
-                    message += `Difficulty ${result.difficulty}: ${result.title} - Score: ${result.score}\n`;
-                });
-
-                await command.editReply(message);
+                const embed = listEmbed(username, difficulty, results);
+                await command.editReply({ embeds: [embed] });
             } catch (error) {
                 console.error('Error fetching scores:', error);
                 await command.editReply('An error occurred while fetching scores.');
