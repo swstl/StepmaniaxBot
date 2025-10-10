@@ -108,7 +108,7 @@ export const listEmbed = (username, difficulty, results) => {
         embed.addFields({
             name: `Difficulty ${result.difficulty}`,
             value: `${result.title}\nScore: **${result.score}**`,
-            inline: true
+            inline: false 
         });
     });
 
