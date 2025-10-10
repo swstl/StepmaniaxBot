@@ -1,5 +1,5 @@
 import register from '../config.js';
-import listEmbed from './Embeds.js';
+import { listEmbed } from './Embeds.js';
 
 /** command types:
  * 1: SUB_COMMAND
