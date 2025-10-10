@@ -4,7 +4,7 @@
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <username> <difficulty>"
     echo "Example: $0 dogfetus wild"
-    echo "Valid difficulties: wild, hard, normal, easy, full, dual"
+    echo "Valid difficulties: wild, hard, easy, basic, full, dual"
     exit 1
 fi
 
@@ -19,11 +19,11 @@ case "$difficulty" in
     hard)
         range=$(seq 12 20)
         ;;
-    normal)
-        range=$(seq 4 14)
+    basic)
+        range=$(seq 1 6)
         ;;
     easy)
-        range=$(seq 1 6)
+        range=$(seq 4 14)
         ;;
     full)
         range=$(seq 7 28)
@@ -33,7 +33,7 @@ case "$difficulty" in
         ;;
     *)
         echo "Error: Invalid difficulty '$difficulty'"
-        echo "Valid difficulties: wild, hard, normal, easy, full, dual"
+        echo "Valid difficulties: wild, hard, basic, easy, full, dual"
         exit 1
         ;;
 esac

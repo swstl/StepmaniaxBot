@@ -1,6 +1,7 @@
 import register from '../config.js';
 import { listEmbed } from './Embeds.js';
 
+
 /** command types:
  * 1: SUB_COMMAND
  * 2: SUB_COMMAND_GROUP
@@ -15,12 +16,13 @@ import { listEmbed } from './Embeds.js';
  * 11: ATTACHMENT
  */
 
+
 // difficulty ranges
 const DIFFICULTY_RANGES = {
     wild: { min: 19, max: 27 },
     hard: { min: 12, max: 20 },
-    normal: { min: 4, max: 14 },
-    easy: { min: 1, max: 6 },
+    easy: { min: 4, max: 14 },
+    basic: { min: 1, max: 6 },
     full: { min: 7, max: 28 },
     dual: { min: 2, max: 21 }
 };
@@ -95,8 +97,8 @@ export const commands = [
                 choices: [
                     { name: 'Wild', value: 'wild' },
                     { name: 'Hard', value: 'hard' },
-                    { name: 'Normal', value: 'normal' },
                     { name: 'Easy', value: 'easy' },
+                    { name: 'Beginner', value: 'basic' },
                     { name: 'Full', value: 'full' },
                     { name: 'Dual', value: 'dual' }
                 ]
@@ -172,9 +174,7 @@ export async function handleCommand(command) {
         case 'list':
             const username = command.options.getString('user');
             const difficulty = command.options.getString('difficulty') || 'wild';
-
             await command.deferReply();
-
             try {
                 const results = await getWorstPBScores(username, difficulty);
                 const embed = listEmbed(username, difficulty, results);
