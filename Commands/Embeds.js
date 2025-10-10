@@ -106,8 +106,8 @@ export const listEmbed = (username, difficulty, results) => {
     // Add fields for each result (max 25 fields in Discord)
     results.forEach(result => {
         embed.addFields({
-            name: `Difficulty ${result.difficulty}`,
-            value: `${result.title}\nScore: **${result.score}**`,
+            name: `${result.title}:`,
+            value: `Difficulty ${result.difficulty}\nScore: **${result.score}**`,
             inline: false 
         });
     });
