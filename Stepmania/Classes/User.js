@@ -27,7 +27,5 @@ export default class user {
         this.description    = user.description;
         this.rival          = user.rival;
 
-        // console.log(user.picture_path);
-
     }
 }

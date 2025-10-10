@@ -1,11 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
-import fs from 'fs';
 
 
 
 export async function GetHistory(){
-    const filePath = '/home/Pinestone/Documents/Stepmania/Stepmania/example.json';
+    // const filePath = '/home/Pinestone/Documents/Stepmania/Stepmania/example.json';
 
     // try {
     //     const jsonData = fs.readFileSync(filePath, 'utf-8');
@@ -21,7 +20,6 @@ export async function GetHistory(){
 
 
 
-    // console.log(process.env.AuthGamerToken);
     let returnData = null;
     const url = process.env.EP_HISTORY;
     const body = {

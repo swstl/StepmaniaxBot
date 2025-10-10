@@ -22,7 +22,7 @@ export function relogChannels(client) {
 
         // save the guild id and the config instance
         register.set(guild.id, new Config());
-    
+
         // save the channelid
         guild.channels.cache.some(channel => {
             if (channel.type === 0) {
@@ -50,7 +50,7 @@ export function loadNewGuildChannel(guild) {
 export function updateTime(time){
     lastUpdate = time;
 }
-    
+
 
 // export the register with all the servers and their config
 export default register;

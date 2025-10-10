@@ -4,7 +4,6 @@ import scoreFeedElement from '../Stepmania/Classes/ScoreFeedElement.js';
 import { GetHistory } from '../Stepmania/Stepmaniax.js';
 import iso8061ToEpoch, {iso8061RightNow} from '../Utils/iso8601Time.js';
 import register, {lastUpdate, updateTime} from '../config.js'
-import { SlashCommandRoleOption } from "discord.js";
 
 
 
@@ -12,12 +11,12 @@ export default async function startInterval(client, time) {
 
     let historyJson = await GetHistory();
     let embeds = [];
-    
+
     // console.log("sending: " + time);
     // console.log(historyJson);
 
     if (historyJson && historyJson.history){
-        
+
         // loops through the json data from stempaniax and creates an embed for each entry (stops at 10 entries)
         // since discord cant send more than 10 embeds at a time (not necessary either(yes ik i can send one at a time))
         for (let index = 0; (index < historyJson.history.length) && (embeds.length < 10); index++) {
@@ -51,10 +50,10 @@ export default async function startInterval(client, time) {
 
 
             // then we loop through each guild and send the new embeds
-            for (const [guildid, config] of register) {
-                // if guild has disabled the bot            
+            for (const [_, config] of register) {
+                // if guild has disabled the bot
                 if (!config.enabled) continue;
-                
+
                 try {
                     console.log(`Sending message to channel ${config.channel}`);
                     const channel = await client.channels.fetch(config.channel);

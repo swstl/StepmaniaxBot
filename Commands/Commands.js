@@ -14,18 +14,25 @@ import register from '../config.js';
  * 11: ATTACHMENT
  */
 
-
-// must now add enable/disable commands as well as region selector and such
+// difficulty ranges
+const DIFFICULTY_RANGES = {
+    wild: { min: 19, max: 27 },
+    hard: { min: 12, max: 20 },
+    normal: { min: 4, max: 14 },
+    easy: { min: 1, max: 6 },
+    full: { min: 7, max: 28 },
+    dual: { min: 2, max: 21 }
+};
 
 export const commands = [
     {
         name: 'updatehistory',
-        description: 'Updates history',
+        description: 'todo',
         options: [
             {
                 name: 'task',
                 description: 'The task to add',
-                type: 3,            
+                type: 3,
                 required: true
             }
         ]
@@ -46,7 +53,14 @@ export const commands = [
                 name: 'region',
                 description: 'The region to change to in ISO 3166-1 alpha-2 format',
                 type: 3,
-                required: true
+                required: true,
+                choices: [
+                    { name: 'United States', value: 'US' },
+                    { name: 'Norway', value: 'NO' },
+                    { name: 'United Kingdom', value: 'GB' },
+                    { name: 'Canada', value: 'CA' },
+                    { name: 'Japan', value: 'JP' },
+                ]
             }
         ]
     },
@@ -61,110 +75,126 @@ export const commands = [
                 required: true
             }
         ]
+    },
+    {
+        name: 'list',
+        description: 'list the worst PB song for each difficulty for a user',
+        options: [
+            {
+                name: 'user',
+                description: 'the user to check',
+                type: 3,
+                required: true
+            },
+            {
+                name: 'difficulty',
+                description: 'the difficulty to check',
+                type: 3,
+                required: false,
+                choices: [
+                    { name: 'Wild', value: 'wild' },
+                    { name: 'Hard', value: 'hard' },
+                    { name: 'Normal', value: 'normal' },
+                    { name: 'Easy', value: 'easy' },
+                    { name: 'Full', value: 'full' },
+                    { name: 'Dual', value: 'dual' }
+                ]
+            }
+        ]
     }
-
-    // {
-    //     name: 'removetask',
-    //     description: 'Deletes a task from the to-do list',
-    //     options: [
-    //         {
-    //             name: 'taskid',
-    //             description: 'The id of the task',
-    //             type: 4,
-    //             required: true
-    //         }
-    //     ]
-    // },
-    // {
-    //     name: 'assigntask',
-    //     description: "Assigns a task to a user",
-    //     options: [
-    //         {
-    //             name: 'taskid',
-    //             description: 'The task number from the top',
-    //             type: 4,
-    //             required: true
-    //         },
-    //         {
-    //             name: 'userid',
-    //             description: 'The id of the user',
-    //             type: 3,
-    //             required: false
-    //         }
-    //     ]
-    // },
-    // {
-    //     name: 'unassigntask',
-    //     description: "Unassigns a task from a user",
-    //     options: [
-    //         {
-    //             name: 'taskid',
-    //             description: 'The task number from the top',
-    //             type: 4,
-    //             required: true
-    //         }
-    //     ]
-    // }
 ];
 
 
-export async function handleCommand(command){
+async function getWorstPBScores(username, difficulty) {
+    const range = DIFFICULTY_RANGES[difficulty];
+    if (!range) {
+        throw new Error(`Invalid difficulty: ${difficulty}`);
+    }
+
+    const results = [];
+
+    for (let diff = range.min; diff <= range.max; diff++) {
+        const query = {
+            "gamer.username": username,
+            "chart.difficulty_name": difficulty,
+            "chart.difficulty": diff,
+            "_group_by": "song_chart_id",
+            "_sort_by": "score",
+            "_order": "asc",
+            "_take": 1
+        };
+
+        const url = new URL('https://api.smx.573.no/scores');
+        url.searchParams.append('q', JSON.stringify(query));
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length > 0) {
+                const score = data[0];
+                results.push({
+                    difficulty: score.chart.difficulty,
+                    title: score.song.title,
+                    score: score.score
+                });
+            }
+        } catch (error) {
+            console.error(`Error fetching difficulty ${diff}:`, error);
+        }
+    }
+
+    return results;
+}
+
+
+export async function handleCommand(command) {
     switch (command.commandName) {
-        
-        
         case 'updatehistory':
-           
             break;
-
-
         case 'disable':
             register.get(command.guildId).enabled = false;
+            await command.reply('Bot disabled in this server.');
             break;
-        
-        
         case 'enable':
             register.get(command.guildId).enabled = true;
+            await command.reply('Bot enabled in this server.');
             break;
-
         case 'region':
             register.get(command.guildId).region = command.options.getString('region').toUpperCase();
+            await command.reply(`Region changed to ${command.options.getString('region').toUpperCase()}`);
             break;
-
         case 'pingrole':
             register.get(command.guildId).roles.push(command.options.getRole('role'));
+            await command.reply(`Role ${command.options.getRole('role')} will now be pinged.`);
             break;
+        case 'list':
+            const username = command.options.getString('user');
+            const difficulty = command.options.getString('difficulty') || 'wild'; // default to wild
 
-        // case 'addtask':
-        //     const task = ir.options.getString('task');
-        //     addtask(ir, task);
-        //     break;
+            await command.deferReply(); // Show "thinking..." since this may take a while
 
-        // case 'createlist':
-        //     createlist(ir);    
-        //     break;
+            try {
+                const results = await getWorstPBScores(username, difficulty);
 
-        // case 'selectlist':
-        //     const listid = ir.options.getString('listid');
-        //     selectlist(ir, listid);
-        //     break;
-            
-        // case 'removetask':
-        //     removetask(ir, ir.options.getInteger('taskid'));
-        //     break;
+                if (results.length === 0) {
+                    await command.editReply(`No scores found for ${username} on ${difficulty} difficulty.`);
+                    return;
+                }
 
-        // case 'assigntask':
-        //     const taskid = ir.options.getInteger('taskid');
-        //     const userid = ir.options.getString('userid');
-        //     assigntask(ir, taskid, userid);
-        //     break;
-        
-        // case 'unassigntask':
-        //     const untaskid = ir.options.getInteger('taskid');
-        //     unassigntask(ir, untaskid);
-        //     break;
+                // Format results
+                let message = `**Worst PB scores for ${username} (${difficulty}):**\n\n`;
+                results.forEach(result => {
+                    message += `Difficulty ${result.difficulty}: ${result.title} - Score: ${result.score}\n`;
+                });
 
+                await command.editReply(message);
+            } catch (error) {
+                console.error('Error fetching scores:', error);
+                await command.editReply('An error occurred while fetching scores.');
+            }
+            break;
         default:
             break;
     }
-
 }
