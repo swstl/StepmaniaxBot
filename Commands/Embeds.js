@@ -107,7 +107,7 @@ export const listEmbed = (username, difficulty, results) => {
     results.forEach(result => {
         embed.addFields({
             name: `${result.title}:`,
-            value: `Difficulty ${result.difficulty}\nScore: **${result.score}**`,
+            value: `Difficulty ${result.difficulty}\nScore: **${result.score}**\n`,
             inline: false 
         });
     });
