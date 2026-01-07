@@ -64,7 +64,7 @@ export const scoreFeedEmbed = (scorefeed) => {
         //            { name: '\u200B', value: '\u200B' })
         // .addFields({ name: 'Score', value: scorefeed.score?.toString()},
         //            { name: '\u200B', value: '\u200B' })
-        .addFields({ name: 'Machine', value: scorefeed.smx_system_id,  inline: true },
+        .addFields({ name: 'Machine', value: scorefeed.smx_system_id.toString(),  inline: true },
                     { name: 'Details', value: scorefeed.song?.bpm + ' BPM', inline: true })
         .setImage(process.env.EP_SCORE_BASE + '/image/' + scorefeed.id)
         .setThumbnail(scorefeed.user?.picture ? process.env.EP_BASE + scorefeed.user?.picture : process.env.defaultPFP)
